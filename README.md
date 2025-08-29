@@ -12,14 +12,12 @@
 
     Include your notes from above: what were your initial ideas, what did the LLM suggest, and how did the results differ by prompt? What resonated with you, and what didn’t? (3-5 sentences.) 
 
-### Reflection
-
 ### 1340 Supplement
+
+### Reflection
 
 - #### 1. Correctness
 
 - #### 2. Random, On-Demand Generation
 
 - #### 3. Overall experience, Bugs encountered and resolved
-
-#### Link to GitHub Repo:  
