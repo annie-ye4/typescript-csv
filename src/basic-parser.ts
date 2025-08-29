@@ -3,9 +3,6 @@ import * as readline from "readline";
 import { z } from "zod";
 
 export async function* parseCSVStream<T>(path: string, schema: z.Schema<T>, hasHeader = true):
-    // changed to async generator instead of await of, gives us control over .return() and .next()
-    // might be worth experimenting with the return and next methods? 
-
     // TN: notice how the "z.Schema<T>" version differs from the "z.Schema" version!!
     // (Mouse over the yield below under both versions to see.)
     AsyncGenerator<T, void, unknown> {
