@@ -1,7 +1,6 @@
 import { parseCSVStream } from "../src/basic-parser";
 import * as fs from "fs";
 import * as path from "path";
-import { PersonRecord, PersonSchema } from "../src/validators/person-schema";
 import { z } from "zod";
 
 const TEST_CSV_PATH = path.join(__dirname, "test-persons.csv");
@@ -21,30 +20,34 @@ beforeAll(() => {
 });
 
 // cleanup after tests
+
 afterAll(() => {
   fs.unlinkSync(TEST_CSV_PATH);
 });
 
-test("parseCSVStream yields only valid Person records", async () => {
+test("parseCSVStream yields objects with headers", async () => {
   const results = [];
-
-  const foo = await parseCSVStream(TEST_CSV_PATH, PersonSchema);
-  const bar = await foo.next();
-  for await (const person of parseCSVStream(TEST_CSV_PATH, PersonSchema)) {
-    results.push(person);
+  for await (const row of parseCSVStream(TEST_CSV_PATH)) {
+    results.push(row);
   }
-  expect(results).toHaveLength(3);
-  expect(results[0]).toEqual({ name: "Alice", age: 23 });
-  expect(results[1]).toEqual({ name: "Bob", age: 19 });
-  expect(results[2]).toEqual({ name: "Eve", age: 42 });
+  expect(results).toHaveLength(5);
+  expect(results[0]).toEqual({ name: "Alice", age: "23" });
+  expect(results[1]).toEqual({ name: "Bob", age: "19" });
+  expect(results[2]).toEqual({ name: "Charlie", age: "-5" });
+  expect(results[3]).toEqual({ name: "Dana", age: "notanumber" }); // this should not work!
+  expect(results[4]).toEqual({ name: "Eve", age: "42" });
 });
 
-test("parseCSVStream skips invalid rows", async () => {
+test("parseCSVStream yields arrays without headers", async () => {
   const results = [];
-  for await (const person of parseCSVStream(TEST_CSV_PATH, PersonSchema)) {
-    results.push(person);
+  for await (const row of parseCSVStream(TEST_CSV_PATH, false)) {
+    results.push(row);
   }
-  // Charlie and Dana should be skipped
-  expect(results.find((p) => p.name === "Charlie")).toBeUndefined();
-  expect(results.find((p) => p.name === "Dana")).toBeUndefined();
+  expect(results).toHaveLength(6);
+  expect(results[0]).toEqual(["name", "age"]);
+  expect(results[1]).toEqual(["Alice", "23"]);
+  expect(results[2]).toEqual(["Bob", "19"]);
+  expect(results[3]).toEqual(["Charlie", "-5"]);
+  expect(results[4]).toEqual(["Dana", "notanumber"]);
+  expect(results[5]).toEqual(["Eve", "42"]);
 });

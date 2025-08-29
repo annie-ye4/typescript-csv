@@ -1,10 +1,9 @@
 import { parseCSVStream } from "./basic-parser";
-import { PersonSchema } from "./validators/person-schema";
 
 const DATA_FILE = "../data/people.csv"; // update with your actual file name
 
 async function main() {
-  for await (const record of parseCSVStream(DATA_FILE, PersonSchema)) {
+  for await (const record of parseCSVStream(DATA_FILE)) {
     console.log(record);
   }
 }
